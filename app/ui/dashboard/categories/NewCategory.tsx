@@ -8,19 +8,65 @@ import { useState } from "react";
 // Interfaces
 import { INavGlobal } from "@/app/shared/interfaces/INavGloba";
 
+// Constants
+import { iconsWithIds } from "@/app/shared/constants/iconsCategories";
+import { useFetch } from "@/app/shared/auth/services/useFetch";
+
+// Services
+import { get } from "@/app/shared/auth/services/useAuth";
+
+interface CategoryType {
+    id?: string;
+    name: string;
+    description: string;
+    icon: string;
+    user_id?: string;
+    is_deleted?: boolean;
+    created_at?: Date;
+    pathIcon: string
+}
 
 export default function NewCategory({ navigation }: INavGlobal) {
+    const [data, setData] = useState<CategoryType>({ name: '', description: '', icon: '', pathIcon: '' });
+    const [loading, setLoading] = useState(false);
 
-const icons = [require('@/assets/images/food-cat.png'), require('@/assets/images/copy-cat.png'), require('@/assets/images/home-cat.png'), require('@/assets/images/transport-cat.png'),
-    require('@/assets/images/new-cat.png'), require('@/assets/images/entertainment-cat.png'), require('@/assets/images/tools-cat.png'), require('@/assets/images/new-cat.png'),
-    require('@/assets/images/winner-cat.png'), require('@/assets/images/important-cat.png'), require('@/assets/images/task-cat.png'), require('@/assets/images/reminder-cat.png'),
-    require('@/assets/images/diversity-cat.png'), require('@/assets/images/locate-cat.png'), require('@/assets/images/clothes-cat.png'), require('@/assets/images/libs-cat.png'),
-    require('@/assets/images/stuff-cat.png'), require('@/assets/images/messages-cat.png'), require('@/assets/images/finance-cat.png'), require('@/assets/images/programming-cat.png'),
-    require('@/assets/images/exchange-cat.png'), require('@/assets/images/other-cat.png')
-]
+    const handleCreateNewCategory = async () => {
+        if (!data.name || !data.description || !data.icon) {
+            Alert.alert('BRD | Error', 'Please fill all the fields.');
+            return
+        }
+
+        if (data.name.length > 200 || data.description.length > 200) {
+            Alert.alert('BRD | Error', 'Name and description must be less than 200 characters.');
+            return
+        }
+
+        const { response, error } = await useFetch({
+            options: {
+                url: 'http://192.168.101.69:3000/category/save',
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${await get('AuthToken').then(res => res?.token)}`
+                }
+            },
+            setLoading: setLoading
+        })
+
+        if (error) {
+            Alert.alert('BRD | Error', error.toString());
+            return
+        }
+
+        if (response) {
+            Alert.alert('BRD | Success', 'Category created successfully.');
+            setData({ name: '', description: '', icon: '', pathIcon: '' });
+        }
+    }
 
   return (
-    <ScrollView >
+    <ScrollView>
         <SafeAreaView style={styleNewCategory.mainInvoice}>
             <View style={styleNewCategory.decorationGradientLeft}></View>
             <View style={styleNewCategory.mainInvoiceContainer}>
@@ -40,7 +86,8 @@ const icons = [require('@/assets/images/food-cat.png'), require('@/assets/images
                         <TextInput placeholder="Gym, Transport, Food, Health, etc."
                         style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1 }}
                         placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-
+                        onChangeText={(value) => setData({ ...data, name: value })}
+                        value={data.name}
                         />
                     </View>
 
@@ -49,17 +96,25 @@ const icons = [require('@/assets/images/food-cat.png'), require('@/assets/images
                         <TextInput placeholder="Description of the category, talking about what it does." numberOfLines={4} multiline 
                         style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, minHeight: 50 }}
                         placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
+                        onChangeText={((text) => setData({ ...data, description: text }))}
+                        value={data.description}
                         />
                     </View>
 
                     <View style={{ gap: 1 }}>
                         <TextWithColor>Icons</TextWithColor>
                         <TextWithColor color="rgba(99, 99, 99, 0.62)" style={{ fontSize: 12, marginTop: 5 }}>Select an icon to represent the category.</TextWithColor>
-                        
+                            
+                        {data.icon &&
+                            <Image source={iconsWithIds.find((icon) => icon.id === data.icon)?.icon} style={styleNewCategory.selectedIcon}/>
+                        }
+
                         <View style={styleNewCategory.iconsContainer}>
                             {
-                                icons.map((icon, index) => (
-                                    <Image source={icon} key={index} style={{ width: 38, height: 38 }} />
+                                iconsWithIds.map((icon, index) => (
+                                    <TouchableOpacity onPress={() => {setData({ ...data, icon: icon.id, pathIcon: icon.path })}} key={index}>
+                                        <Image source={icon.icon} style={{ width: 38, height: 38, borderBottomWidth: 2, borderColor: data.icon === icon.id ? 'rgb(245, 84, 84)' : 'transparent' }}/>
+                                    </TouchableOpacity>
                                 ))
                             }
                         </View>
@@ -67,7 +122,7 @@ const icons = [require('@/assets/images/food-cat.png'), require('@/assets/images
 
                     <View style={{ flexDirection: 'row', gap: 10 }}>
                         <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
-                        onPress={() => {}}>
+                        onPress={() => {handleCreateNewCategory()}}>
                             <TextWithColor>Create</TextWithColor>
                         </TouchableOpacity>
 
@@ -144,5 +199,11 @@ const styleNewCategory = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         borderRadius: 10
+    },
+    selectedIcon: {
+        width: 38,
+        height: 38,
+        marginTop: 12,
+        filter: 'drop-shadow(4px 4px 4px rgba(26, 26, 24, 0.22))',
     }
 });
