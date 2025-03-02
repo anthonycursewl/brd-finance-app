@@ -1,45 +1,24 @@
-import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert } from "react-native";
-
 // components
+import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert } from "react-native";
 import TextWithColor from "@/app/shared/components/TextWithColor";
-import { useRef, useState } from "react";
+
+// hooks
+import { useState } from "react";
+
+// Interfaces
 import { INavGlobal } from "@/app/shared/interfaces/INavGloba";
-import { parse, transform } from "@babel/core";
-import Animated from "react-native-reanimated";
+import { ItemInvoice, InvoiceData, DiscountOrTax } from "./interfaces/InvoiceTypes";
 
-interface ItemInvoice {
-    name: string;
-    quantity: string | number;
-    amount: string | number;
-    subtotal: number;
-}
-
-interface InvoiceData {
-    to: string;
-    from: string;
-    category: string;
-    description: string;
-    items: ItemInvoice[];
-    total: number;
-    created_at: string;
-    tax: number;
-    discount: number;
-}
-
-interface DiscountOrTax {
-    name: string;
-    value: number;
-}
+// Services
+import { handleAddNewItem } from "./services/addNewItem";
+import { useGlobalState } from "@/app/shared/GlobalState/GlobalState";
 
 export default function NewInvoice({ navigation }: INavGlobal) {
     const [invoiceData, setInvoiceData] = useState<InvoiceData>({ to: '', from: '', category: '', description: '', items: [], total: 0, created_at: new Date().toISOString(), tax: 0, discount: 0 })
-    const [items, setItems] = useState<ItemInvoice[]>([])
-    const [item, setItem] = useState<ItemInvoice>({ name: '', quantity: '', amount: '', subtotal: 0 })
     const [isDiscountOrTax, setIsDiscountOrTax] = useState<DiscountOrTax>({ name: '', value: 0 })
 
-    // Referencias al Scroll
+    const { item, items, setItem, setItems,  } = useGlobalState()
 
-    // calculo de los taxes con descuento
     let subtotal = items.map((item) => item.subtotal).reduce((a, b) => a + b, 0)
     let total = isDiscountOrTax.name === 'Tax' ? subtotal * (isDiscountOrTax.value / 100) + subtotal : subtotal - (subtotal * (isDiscountOrTax.value / 100))
 
@@ -58,29 +37,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
         console.log(invoiceData)
     }
 
-    const handleAddNewItem = () => {
-        if (!item.name || !item.quantity || !item.amount) {
-            Alert.alert('BRD | Error', 'Please fill all the fields.');
-            return
-        }
-
-        if (parseFloat(item.amount.toString()) < 0 || parseFloat(item.quantity.toString()) < 0) {
-            return Alert.alert('BRD | Error', 'Quantity and amount must be greater than 0.');
-        }
-
-        let amount = parseFloat(item.amount.toString())
-        let quantity = parseFloat(item.quantity.toString())
-        const newItem = {
-            name: item.name,
-            quantity: quantity,
-            amount: amount,
-            subtotal: amount * quantity,
-        }
-
-        setItems([...items, newItem])
-        setItem({ name: '', quantity: 0, amount: 0, subtotal: 0 })
-        console.log(items)
-    }
+    
 
   return (
     <ScrollView >
@@ -146,6 +103,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             <TextInput placeholder="Quantity..." 
                             style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, width: '100%'}}
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
+                            keyboardType="numeric"
                             value={item.quantity.toString()}
                             onChangeText={(text) => text ? setItem({ ...item, quantity: text }) : setItem({ ...item, quantity: '' })}
                             />
@@ -157,6 +115,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, width: '100%' }}
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
                             value={item.amount.toString()}
+                            keyboardType="numeric"
                             onChangeText={(text) => {text ? setItem({ ...item, amount: text }) : setItem({ ...item, amount: '' })}}
                             />
                         </View>
@@ -164,7 +123,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                         <View style={{ justifyContent: 'center', alignItems: 'center', width: 120 }}>
                             <TouchableOpacity style={styleNewInvoice.buttonAddItem} 
                             onPress={() => {
-                                handleAddNewItem()
+                                handleAddNewItem({ item, items, setItem, setItems, Alert })
                             }}
                             >
                                 <TextWithColor>Add</TextWithColor>
@@ -196,6 +155,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                         <View>
                             <TextWithColor>Discount or Tax</TextWithColor>
                             <TextInput placeholder="Enter discount or tax in percentage." 
+                            keyboardType="numeric"
                             style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1 }}
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
                             onChangeText={(text) => text ? setIsDiscountOrTax({ ...isDiscountOrTax, value: parseFloat(text) }) : setIsDiscountOrTax({ ...isDiscountOrTax, value: 0 })}

@@ -1,11 +1,16 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import Login from './ui/auth/login/login';
-import { SplashScreen } from 'expo-router';
-import { useFonts } from 'expo-font';
+// Global State using Zustand
+import { useGlobalState } from "./shared/GlobalState/GlobalState";
+
 // hooks
-import { useEffect } from 'react';
-import Main from './ui/dashboard/main/main';
-import NewInvoice from './ui/dashboard/invoices/NewInvoice';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect } from "react";
+import { useFonts } from "expo-font";
+
+// Screens
+import { SplashScreen } from "expo-router";
+import Login from "./ui/auth/login/login";
+import Main from "./ui/dashboard/main/main";
+import NewInvoice from "./ui/dashboard/invoices/NewInvoice";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,14 +18,15 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Index() {
   const [loaded] = useFonts({
-    OnestRegular: require('../assets/fonts/Onest-Regular.ttf'),
-  })
+    OnestRegular: require("../assets/fonts/Onest-Regular.ttf"),
+  });
+  const { IsAuthenticated } = useGlobalState();
 
   useEffect(() => {
-      if (loaded) {
-        SplashScreen.hideAsync();
-      }
-    }, [loaded]);
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
   if (!loaded) {
     return null;
@@ -28,9 +34,22 @@ export default function Index() {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="Main" component={Main} options={{ headerShown: false }}/>
-      <Stack.Screen name="NewInvoice" component={NewInvoice} options={{ headerShown: false }}/>
+        <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+        />
+
+      <Stack.Screen
+        name="Main"
+        component={Main}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NewInvoice"
+        component={NewInvoice}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

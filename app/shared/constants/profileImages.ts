@@ -1,0 +1,2 @@
+export const profilePicUrl = 'https://t4.ftcdn.net/jpg/03/73/50/11/360_F_373501182_AW73b2wvfm9wBuar0JYwKBeF8NAUHDOH.jpg' 
+export const headerApp = 'https://png.pngtree.com/png-clipart/20230315/original/pngtree-abstract-wave-lines-purple-background-png-image_8988848.png'
