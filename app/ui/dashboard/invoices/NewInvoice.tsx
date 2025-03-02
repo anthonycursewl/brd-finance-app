@@ -37,8 +37,6 @@ export default function NewInvoice({ navigation }: INavGlobal) {
         console.log(invoiceData)
     }
 
-    
-
   return (
     <ScrollView >
         <SafeAreaView style={styleNewInvoice.mainInvoice}>

@@ -11,6 +11,7 @@ import { SplashScreen } from "expo-router";
 import Login from "./ui/auth/login/login";
 import Main from "./ui/dashboard/main/main";
 import NewInvoice from "./ui/dashboard/invoices/NewInvoice";
+import NewCategory from "./ui/dashboard/categories/NewCategory";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,20 +35,32 @@ export default function Index() {
 
   return (
     <Stack.Navigator>
+
+       {/* SCREEN AUTH*/} 
         <Stack.Screen
         name="Login"
         component={Login}
         options={{ headerShown: false }}
         />
 
+      {/* SCREEN DASHBOARD*/} 
       <Stack.Screen
         name="Main"
         component={Main}
         options={{ headerShown: false }}
       />
+
+      {/* SCREEN NEW INVOICE*/}
       <Stack.Screen
         name="NewInvoice"
         component={NewInvoice}
+        options={{ headerShown: false }}
+      />
+
+      {/* SCREEN NEW CATEGORY */}
+      <Stack.Screen
+        name="NewCategory"
+        component={NewCategory}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

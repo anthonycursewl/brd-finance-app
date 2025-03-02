@@ -128,14 +128,13 @@ export const styleMain = StyleSheet.create({
         gap: 14
     },
     newCategory: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
         alignItems: 'center', 
-        gap: 8, 
-        paddingVertical: 6, 
-        paddingHorizontal: 12, 
+        gap: 5, 
+        paddingVertical: 4, 
+        paddingHorizontal: 8, 
         borderColor: 'rgba(236, 177, 67, 0.81)', 
         borderWidth: 1, 
         borderRadius: 50,
-        width: 'auto'
     }
 })

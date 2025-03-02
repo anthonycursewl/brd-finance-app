@@ -95,11 +95,17 @@ export default function Main({ navigation }: INavGlobal) {
                         </View>
                     </View>
 
-                    <View style={{ width: '100%', marginTop: 10 }}>
+                    <View style={{ marginTop: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: 8 }}>
 
-                        <TouchableOpacity style={styleMain.newCategory}>
+                        <TouchableOpacity style={styleMain.newCategory}
+                        onPress={() => navigation.navigate('NewCategory')}>
                             <Image source={require('../../../../assets/images/new-cat.png')} style={{ width: 18, height: 18 }}/>
                             <TextWithColor color="rgb(223, 154, 50)" style={{ fontSize: 13 }}>New category</TextWithColor>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styleMain.newCategory}>
+                            <Image source={require('../../../../assets/images/copy-cat.png')} style={{ width: 18, height: 18 }}/>
+                            <TextWithColor color="rgb(223, 154, 50)" style={{ fontSize: 13 }}>Categories</TextWithColor>
                         </TouchableOpacity>
 
                     </View>
