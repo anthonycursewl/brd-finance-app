@@ -16,6 +16,7 @@ import { save } from "@/app/shared/auth/services/useAuth"
 
 // Styling
 import { styleLogin } from "./styles/styleLogin"
+import { BRD_API_URL } from "@/app/config/breadriuss.config"
 
 export interface FormData {
     email: string;
@@ -37,7 +38,7 @@ export default function Login({ navigation }: INavGlobal) {
         const { response, error } = await useFetch(
             { 
                 options: {
-                    url: 'http://192.168.101.69:3000/user/login',
+                    url: `${BRD_API_URL}/user/login`,
                     method: 'POST',
                     body: dataClean,
                     headers: {

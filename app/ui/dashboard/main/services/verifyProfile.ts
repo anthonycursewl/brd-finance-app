@@ -2,6 +2,7 @@ import { useFetch } from "@/app/shared/auth/services/useFetch";
 import { get } from "@/app/shared/auth/services/useAuth";
 import { User } from "@/app/shared/interfaces/IUser";
 import { INavGlobal } from "@/app/shared/interfaces/INavGloba";
+import { BRD_API_URL } from "@/app/config/breadriuss.config";
 
 interface VerifyProps {
     setLoading: (loading: boolean) => void;
@@ -16,7 +17,7 @@ interface VerifyProps {
 export const verify = async ({ setLoading, setIsAuthenticated, setUser, Alert, rt }: VerifyProps): Promise<void> => {
     const { response, error } = await useFetch({
         options: {
-            url: 'http://192.168.101.69:3000/user/verify',
+            url: `${BRD_API_URL}/user/verify`,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

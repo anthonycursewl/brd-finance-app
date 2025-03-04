@@ -1,5 +1,5 @@
 // components
-import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert, Image } from "react-native";
+import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert, Image, ActivityIndicator } from "react-native";
 import TextWithColor from "@/app/shared/components/TextWithColor";
 
 // hooks
@@ -14,6 +14,9 @@ import { useFetch } from "@/app/shared/auth/services/useFetch";
 
 // Services
 import { get } from "@/app/shared/auth/services/useAuth";
+import { BRD_API_URL } from "@/app/config/breadriuss.config";
+import { useGlobalState } from "@/app/shared/GlobalState/GlobalState";
+import { generateUUID } from "@/app/config/services/generatorUUIDs";
 
 interface CategoryType {
     id?: string;
@@ -29,6 +32,7 @@ interface CategoryType {
 export default function NewCategory({ navigation }: INavGlobal) {
     const [data, setData] = useState<CategoryType>({ name: '', description: '', icon: '', pathIcon: '' });
     const [loading, setLoading] = useState(false);
+    const { user } = useGlobalState()
 
     const handleCreateNewCategory = async () => {
         if (!data.name || !data.description || !data.icon) {
@@ -41,11 +45,23 @@ export default function NewCategory({ navigation }: INavGlobal) {
             return
         }
 
+        const id = generateUUID().split('-')
+        const shapeId = id[0] + '-' + id[4]
+        const newCat = {
+            id: shapeId,
+            name: data.name,
+            description: data.description,
+            icon: data.pathIcon,
+            created_at: new Date().toISOString(),
+            is_deleted: false,
+            user_id: user.id,
+        }
+
         const { response, error } = await useFetch({
             options: {
-                url: 'http://192.168.101.69:3000/category/save',
+                url: `${BRD_API_URL}/category/save`,
                 method: 'POST',
-                body: data,
+                body: newCat,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `${await get('AuthToken').then(res => res?.token)}`
@@ -121,15 +137,21 @@ export default function NewCategory({ navigation }: INavGlobal) {
                     </View>
 
                     <View style={{ flexDirection: 'row', gap: 10 }}>
-                        <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
-                        onPress={() => {handleCreateNewCategory()}}>
-                            <TextWithColor>Create</TextWithColor>
-                        </TouchableOpacity>
+                        {
+                            loading ?
+                            <ActivityIndicator size="large" color="rgb(245, 84, 84)" /> :
+                            <>
+                                <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
+                                onPress={() => {handleCreateNewCategory()}}>
+                                    <TextWithColor>Create</TextWithColor>
+                                </TouchableOpacity>
 
-                        <TouchableOpacity style={styleNewCategory.buttonCancelInvoice} 
-                        onPress={() => {navigation.goBack()}}>
-                            <TextWithColor color="rgba(238, 237, 237, 0.93)">Cancel</TextWithColor>
-                        </TouchableOpacity>
+                                <TouchableOpacity style={styleNewCategory.buttonCancelInvoice} 
+                                onPress={() => {navigation.goBack()}}>
+                                    <TextWithColor color="rgba(238, 237, 237, 0.93)">Cancel</TextWithColor>
+                                </TouchableOpacity>
+                            </>
+                        }
                     </View>
 
                 </View>
