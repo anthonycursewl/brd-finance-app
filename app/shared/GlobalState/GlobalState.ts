@@ -1,6 +1,9 @@
 import { create } from 'zustand'
+// Interfaces
 import { User } from '../interfaces/IUser'
 import { ItemInvoice } from '@/app/ui/dashboard/invoices/interfaces/InvoiceTypes'
+import { CategoryType } from '../interfaces/ICategory'
+
 
 interface IGlobalState {
     user: User,
@@ -10,7 +13,10 @@ interface IGlobalState {
     item: ItemInvoice,
     setItem: (item: ItemInvoice) => void,
     items: ItemInvoice[],
-    setItems: (items: ItemInvoice[]) => void
+    setItems: (items: ItemInvoice[]) => void,
+    categories: CategoryType[],
+    setCategories: (categories: CategoryType[]) => void
+
 }
 
 export const useGlobalState = create<IGlobalState>((set) => ({
@@ -22,4 +28,6 @@ export const useGlobalState = create<IGlobalState>((set) => ({
     setItem: (item: ItemInvoice) => set({ item }),
     items: [],
     setItems: (items: ItemInvoice[]) => set({ items }),
+    categories: [],
+    setCategories: (categories: CategoryType[]) => set({ categories }),
 }))

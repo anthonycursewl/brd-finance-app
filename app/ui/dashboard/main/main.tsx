@@ -103,7 +103,9 @@ export default function Main({ navigation }: INavGlobal) {
                             <TextWithColor color="rgb(223, 154, 50)" style={{ fontSize: 13 }}>New category</TextWithColor>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styleMain.newCategory}>
+                        <TouchableOpacity style={styleMain.newCategory}
+                        onPress={() => navigation.navigate('ShowCategories')}
+                        >
                             <Image source={require('../../../../assets/images/copy-cat.png')} style={{ width: 18, height: 18 }}/>
                             <TextWithColor color="rgb(223, 154, 50)" style={{ fontSize: 13 }}>Categories</TextWithColor>
                         </TouchableOpacity>

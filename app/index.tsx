@@ -1,5 +1,6 @@
-// Global State using Zustand
-import { useGlobalState } from "./shared/GlobalState/GlobalState";
+// lazy loading
+import { lazy } from "react";
+import { Suspense } from "react";
 
 // hooks
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -8,10 +9,11 @@ import { useFonts } from "expo-font";
 
 // Screens
 import { SplashScreen } from "expo-router";
-import Login from "./ui/auth/login/login";
-import Main from "./ui/dashboard/main/main";
-import NewInvoice from "./ui/dashboard/invoices/NewInvoice";
-import NewCategory from "./ui/dashboard/categories/NewCategory";
+const Login = lazy(() => import("./ui/auth/login/login"));
+const Main = lazy(() => import("./ui/dashboard/main/main"));
+const NewInvoice = lazy(() => import("./ui/dashboard/invoices/NewInvoice"));
+const NewCategory = lazy(() => import("./ui/dashboard/categories/NewCategory"));
+const ShowCategories = lazy(() => import("./ui/dashboard/categories/CategoriesList/ShowCategories"))
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +23,6 @@ export default function Index() {
   const [loaded] = useFonts({
     OnestRegular: require("../assets/fonts/Onest-Regular.ttf"),
   });
-  const { IsAuthenticated } = useGlobalState();
 
   useEffect(() => {
     if (loaded) {
@@ -34,35 +35,42 @@ export default function Index() {
   }
 
   return (
-    <Stack.Navigator>
-
-       {/* SCREEN AUTH*/} 
+    <Suspense fallback={null}>
+      <Stack.Navigator>
+        {/* SCREEN AUTH*/}
         <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{ headerShown: false }}
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
         />
 
-      {/* SCREEN DASHBOARD*/} 
-      <Stack.Screen
-        name="Main"
-        component={Main}
-        options={{ headerShown: false }}
-      />
+        {/* SCREEN DASHBOARD*/}
+        <Stack.Screen
+          name="Main"
+          component={Main}
+          options={{ headerShown: false }}
+        />
 
-      {/* SCREEN NEW INVOICE*/}
-      <Stack.Screen
-        name="NewInvoice"
-        component={NewInvoice}
-        options={{ headerShown: false }}
-      />
+        {/* SCREEN NEW INVOICE*/}
+        <Stack.Screen
+          name="NewInvoice"
+          component={NewInvoice}
+          options={{ headerShown: false }}
+        />
 
-      {/* SCREEN NEW CATEGORY */}
-      <Stack.Screen
-        name="NewCategory"
-        component={NewCategory}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
+        {/* SCREEN NEW CATEGORY */}
+        <Stack.Screen
+          name="NewCategory"
+          component={NewCategory}
+          options={{ headerShown: false }}
+          />
+        {/* SCREEN SHOW CATEGORIES */}
+        <Stack.Screen
+          name="ShowCategories"
+          component={ShowCategories}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </Suspense>
   );
 }
