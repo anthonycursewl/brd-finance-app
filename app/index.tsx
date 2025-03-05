@@ -10,6 +10,7 @@ import { useFonts } from "expo-font";
 // Screens
 import { SplashScreen } from "expo-router";
 import ShowByCategory from "./ui/dashboard/invoices/ShowByCategory/ShowByCategory";
+import InvoiceDetails from "./ui/dashboard/invoices/InvoiceDetails/InvoiceDetails";
 const Login = lazy(() => import("./ui/auth/login/login"));
 const Main = lazy(() => import("./ui/dashboard/main/main"));
 const NewInvoice = lazy(() => import("./ui/dashboard/invoices/NewInvoice"));
@@ -76,6 +77,13 @@ export default function Index() {
         <Stack.Screen
           name="ShowByCategory"
           component={ShowByCategory}
+          options={{ headerShown: false }}
+        />
+
+        {/* SCREEN SHOW CATEGORIES */}
+        <Stack.Screen
+          name="InvoiceDetails"
+          component={InvoiceDetails}
           options={{ headerShown: false }}
         />
 
