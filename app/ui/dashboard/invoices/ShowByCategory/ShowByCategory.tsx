@@ -83,7 +83,7 @@ export default function ShowByCategory({ navigation }: INavGlobal) {
         
 
     useEffect(() => {
-        //getInvoicesByCategory()
+        getInvoicesByCategory()
     }, [])
 
     return (
@@ -92,7 +92,7 @@ export default function ShowByCategory({ navigation }: INavGlobal) {
 
             <View style={styleInvoicesCategory.mainInvoiceContainer}>
                 <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, borderRadius: 12 }}>
-                    <Image source={{ uri: item.icon }} style={{ width: 50, height: 50 }} />
+                    <Image source={{ uri: item.icon }} style={{ width: 40, height: 40 }} />
                     <TextWithColor color="rgb(223, 161, 74)" style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</TextWithColor>
                 </View>
                 
@@ -134,14 +134,14 @@ export default function ShowByCategory({ navigation }: INavGlobal) {
                                         <View key={index} style={{ gap: 3, flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <View style={{ flexDirection: 'row', gap: 3 }}>
                                                 <TextWithColor color="rgb(214, 175, 124)" style={{ fontSize: 12 }}>x{item.quantity}</TextWithColor>
-                                                <TextWithColor color="rgb(82, 82, 82)" style={{ fontSize: 12 }}>{item.product}</TextWithColor>
+                                                <TextWithColor color="rgb(82, 82, 82)" style={{ fontSize: 14 }}>{item.product}</TextWithColor>
                                             </View>
 
-                                            <TextWithColor color='rgb(158, 126, 68)' style={{ fontSize: 12 }}>${item.unitPrice}</TextWithColor>
+                                            <TextWithColor color='rgb(158, 126, 68)' style={{ fontSize: 14 }}>${item.unitPrice}</TextWithColor>
                                         </View>
                                     ))}
                                     {inv.items.length > 3 && (
-                                        <TextWithColor color="rgb(82, 82, 82)" style={{ fontSize: 12 }}>+{inv.items.length - 3} more</TextWithColor>
+                                        <TextWithColor color="rgb(82, 82, 82)" style={{ fontSize: 13 }}>+{inv.items.length - 3} more</TextWithColor>
                                     )}
                                 </View>
 
