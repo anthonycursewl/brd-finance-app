@@ -16,7 +16,6 @@ import { styleMain } from "./styles/styleMain"
 // services
 import { verify } from "./services/verifyProfile"
 import { profilePicUrl, headerApp } from "@/app/shared/constants/profileImages"
-import { transform } from "@babel/core"
 
 export default function Main({ navigation }: INavGlobal) {
     const [loading, setLoading] = useState<boolean>(false)

@@ -235,7 +235,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             style={{ backgroundColor: isDiscountOrTax.name === 'Tax' ? 'rgba(238, 186, 42, 0.72)' : 'rgba(216, 216, 216, 0.72)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 15 }}
                             onPress={() => setIsDiscountOrTax({ name: 'Tax', value: isDiscountOrTax.value })}
                             >
-                                <TextWithColor >Tax</TextWithColor>
+                                <TextWithColor>Tax</TextWithColor>
                             </TouchableOpacity>
                         </View>
 
