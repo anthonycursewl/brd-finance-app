@@ -136,23 +136,20 @@ export default function NewCategory({ navigation }: INavGlobal) {
                         </View>
                     </View>
 
-                    <View style={{ flexDirection: 'row', gap: 10 }}>
                         {
-                            loading ?
-                            <ActivityIndicator size="large" color="rgb(245, 84, 84)" /> :
-                            <>
-                                <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
-                                onPress={() => {handleCreateNewCategory()}}>
-                                    <TextWithColor>Create</TextWithColor>
-                                </TouchableOpacity>
+                        loading ? <ActivityIndicator size="large" color="rgb(231, 173, 63)" /> :
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                            <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
+                            onPress={() => {handleCreateNewCategory()}}>
+                                <TextWithColor>Create</TextWithColor>
+                            </TouchableOpacity>
 
                                 <TouchableOpacity style={styleNewCategory.buttonCancelInvoice} 
-                                onPress={() => {navigation.goBack()}}>
-                                    <TextWithColor color="rgba(238, 237, 237, 0.93)">Cancel</TextWithColor>
-                                </TouchableOpacity>
-                            </>
+                            onPress={() => {navigation.goBack()}}>
+                                <TextWithColor color="rgba(238, 237, 237, 0.93)">Cancel</TextWithColor>
+                            </TouchableOpacity>
+                        </View>
                         }
-                    </View>
 
                 </View>
             </View>

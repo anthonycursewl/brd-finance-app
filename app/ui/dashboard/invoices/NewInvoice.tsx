@@ -1,29 +1,37 @@
 // components
-import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView, StyleSheet, View, TextInput, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import TextWithColor from "@/app/shared/components/TextWithColor";
+import { Picker } from '@react-native-picker/picker';
 
 // hooks
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Interfaces
 import { INavGlobal } from "@/app/shared/interfaces/INavGloba";
-import { ItemInvoice, InvoiceData, DiscountOrTax } from "./interfaces/InvoiceTypes";
+import { InvoiceData, DiscountOrTax } from "./interfaces/InvoiceTypes";
 
 // Services
 import { handleAddNewItem } from "./services/addNewItem";
 import { useGlobalState } from "@/app/shared/GlobalState/GlobalState";
+import { useFetch } from "@/app/shared/auth/services/useFetch";
+import { BRD_API_URL } from "@/app/config/breadriuss.config";
+import { get } from "@/app/shared/auth/services/useAuth";
+import { CategoryType } from "@/app/shared/interfaces/ICategory";
+import { generateNumericId } from "@/app/config/services/generatorIDs";
 
 export default function NewInvoice({ navigation }: INavGlobal) {
-    const [invoiceData, setInvoiceData] = useState<InvoiceData>({ to: '', from: '', category: '', description: '', items: [], total: 0, created_at: new Date().toISOString(), tax: 0, discount: 0 })
+    const [invoiceData, setInvoiceData] = useState<InvoiceData>({ to: '', from: '', category_id: '', description: '', items: [], issuedAt: new Date().toISOString(), tax: 0, discount: 0, id: '', is_paid: false })
     const [isDiscountOrTax, setIsDiscountOrTax] = useState<DiscountOrTax>({ name: '', value: 0 })
+    const [loading, setLoading] = useState<boolean>(false);
+    const [invoiceId, setInvoiceId] = useState<string>('');
 
-    const { item, items, setItem, setItems,  } = useGlobalState()
+    const { item, items, setItem, setItems, categories, user, setCategories } = useGlobalState()
 
-    let subtotal = items.map((item) => item.subtotal).reduce((a, b) => a + b, 0)
+    let subtotal = items.map((item) => parseInt(item.quantity.toString()) * parseFloat(item.unitPrice.toString())).reduce((a, b) => a + b, 0)
     let total = isDiscountOrTax.name === 'Tax' ? subtotal * (isDiscountOrTax.value / 100) + subtotal : subtotal - (subtotal * (isDiscountOrTax.value / 100))
 
-    const handlePress = () => {
-        if (!invoiceData.to || !invoiceData.category || !invoiceData.description) {
+    const handlePress = async () => {
+        if (!invoiceData.to || !invoiceData.category_id || !invoiceData.description) {
             Alert.alert('BRD | Error', 'Please fill all the fields.');
             return
         }
@@ -33,9 +41,80 @@ export default function NewInvoice({ navigation }: INavGlobal) {
         }
 
         invoiceData.items = items
-        invoiceData.total = total
-        console.log(invoiceData)
+        invoiceData.from = user.id
+        invoiceData.id = invoiceId
+
+        const newInvoice = {
+            id: invoiceData.id,
+            to: invoiceData.to.trim(),
+            from: invoiceData.from,
+            category_id: invoiceData.category_id,
+            description: invoiceData.description.trim(),
+            items: invoiceData.items,
+            issuedAt: invoiceData.issuedAt,
+            type: isDiscountOrTax.name === 'Tax' ? 'tax' : 'discount',
+            type_amount: isDiscountOrTax.value,
+            is_paid: invoiceData.is_paid
+        }
+
+        const { response, error } = await useFetch({
+            options: {
+                url: `${BRD_API_URL}/invoice/save`,
+                method: 'POST',
+                body: newInvoice,
+                headers: {
+                    'Authorization': `${await get('AuthToken').then(res => res?.token)}`,
+                    'Content-Type': 'application/json'
+                }
+            },
+            setLoading: setLoading
+        })
+
+        if (error) {
+            return Alert.alert('BRD | Error', error.toString());
+        }
+
+        if (response) {
+            Alert.alert('BRD | Success', 'Invoice created successfully.');
+            setItems([])
+            setInvoiceData({ to: '', from: '', category_id: '', description: '', items: [], issuedAt: new Date().toISOString(), tax: 0, discount: 0, id: '', is_paid: false })
+        }
+     }
+
+    const getData = async () => {
+        if (categories.length === 0) {
+            const { response, error } = await useFetch({ 
+                options: {
+                    url: `${BRD_API_URL}/category/find/all/${user.id}`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `${await get('AuthToken').then(res => res?.token)}`,
+                        'Content-Type': 'application/json'
+                    }
+                },
+                setLoading: setLoading
+            })
+            
+            if (error) {
+                Alert.alert('BRD | Error', error.toString());
+                return
+            }
+    
+            if (response) {
+                setCategories(response)
+            }
+        }
     }
+
+    useEffect(() => {
+        getData()
+    }, [])
+
+    useEffect(() => {
+        if (items.length === 0) {
+            setInvoiceId(generateNumericId())
+        }
+    }, [items])
 
   return (
     <ScrollView >
@@ -43,7 +122,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
             <View style={styleNewInvoice.decorationGradientLeft}></View>
             <View style={styleNewInvoice.mainInvoiceContainer}>
                 <View style={{ width: '100%' }}>
-                    <TextWithColor color="rgb(39, 39, 39)" style={{ fontSize: 20 }}>New Invoice</TextWithColor>
+                    <TextWithColor color="rgb(39, 39, 39)" style={{ fontSize: 20 }}>New Invoice #{invoiceId}</TextWithColor>
                     <TextWithColor color="rgba(99, 99, 99, 0.62)" style={{ fontSize: 12, marginTop: 5 }}>Create a new invoice for you client. You can spicify the invoice details and add items to the invoice.</TextWithColor>
                 </View>
 
@@ -58,17 +137,27 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                         <TextInput placeholder="Stella Rose Benett"
                         style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1 }}
                         placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-                        onChangeText={(text) => setInvoiceData({...invoiceData, to: text})}
+                        onChangeText={(text) => setInvoiceData({...invoiceData, to: text })}
                         />
                     </View>
 
                     <View style={{ gap: 5 }}>
                         <TextWithColor>Category</TextWithColor>
-                        <TextInput placeholder="Sport, gym, workout..."
-                        style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1 }}
-                        placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-                        onChangeText={(text) => setInvoiceData({...invoiceData, category: text})}
-                        />
+                        {
+                            categories.length > 0 ?
+                            <Picker
+                            selectedValue={invoiceData.category_id}
+                            onValueChange={(text) => setInvoiceData({...invoiceData, category_id: text })}
+                            >
+                                {
+                                    categories.map((category: CategoryType) => (
+                                        <Picker.Item key={category.id} label={category.name} value={category.id} />
+                                    ))
+                                }
+                            </Picker>
+                            : null
+                        }
+                        <View style={{ height: 1, backgroundColor: 'rgba(99, 99, 99, 0.25)' }}></View>
                     </View>
 
                     <View style={{ gap: 1 }}>
@@ -76,7 +165,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                         <TextInput placeholder="Description of the Invoice, talking about what kind of service you are providing." numberOfLines={4} multiline 
                         style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, minHeight: 50 }}
                         placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-                        onChangeText={(text) => setInvoiceData({ ...invoiceData, description: text })}
+                        onChangeText={(text) => {text ? setInvoiceData({ ...invoiceData, description: text }) : setInvoiceData({ ...invoiceData, description: '' }) }}
                         />
                     </View>
 
@@ -91,8 +180,8 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             <TextInput placeholder="Item..."
                             style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, width: '100%' }}
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-                            value={item.name}
-                            onChangeText={(text) => setItem({ ...item, name: text })}
+                            value={item.product}
+                            onChangeText={(text) => {text ? setItem({ ...item, product: text }) : setItem({ ...item, product: '' })}}
                             />
                         </View>
 
@@ -103,7 +192,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
                             keyboardType="numeric"
                             value={item.quantity.toString()}
-                            onChangeText={(text) => text ? setItem({ ...item, quantity: text }) : setItem({ ...item, quantity: '' })}
+                            onChangeText={(text) => {text ? setItem({ ...item, quantity: text }) : setItem({ ...item, quantity: '' })}}
                             />
                         </View>
 
@@ -112,9 +201,9 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             <TextInput placeholder="$0.00" 
                             style={{ textAlign: 'left', borderBottomColor: 'rgba(99, 99, 99, 0.25)', borderBottomWidth: 1, width: '100%' }}
                             placeholderTextColor={'rgba(65, 65, 65, 0.25)'}
-                            value={item.amount.toString()}
+                            value={item.unitPrice.toString()}
                             keyboardType="numeric"
-                            onChangeText={(text) => {text ? setItem({ ...item, amount: text }) : setItem({ ...item, amount: '' })}}
+                            onChangeText={(text) => {setItem({ ...item, unitPrice: text })}}
                             />
                         </View>
 
@@ -160,18 +249,21 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             />
                         </View>
                     </View>
-
-                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                    
+                    {
+                        loading ? <ActivityIndicator size="large" color="rgb(231, 173, 63)" /> :
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
                         <TouchableOpacity style={styleNewInvoice.buttonCreateInvoice}
-                        onPress={() => {handlePress()}}>
+                            onPress={() => {handlePress()}}>
                             <TextWithColor>Create</TextWithColor>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styleNewInvoice.buttonCancelInvoice} 
-                        onPress={() => {navigation.goBack()}}>
+                            onPress={() => {navigation.goBack()}}>
                             <TextWithColor color="rgba(238, 237, 237, 0.93)">Cancel</TextWithColor>
                         </TouchableOpacity>
                     </View>
+                    }
 
                     <View>
                         <TextWithColor color="rgb(231, 173, 63)" style={{ fontSize: 20 }}>Invoice Preview</TextWithColor>
@@ -180,10 +272,15 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                         <View style={{ width: '100%', marginBottom: 30, marginTop: 15 }}>
                             { items.length > 0 ?
                                 items.map((item, index) => (
-                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                                        <TextWithColor><TextWithColor color="rgba(199, 141, 33, 0.76)">x{item.quantity}</TextWithColor> {item.name}</TextWithColor>
-                                        <TextWithColor>${item.subtotal.toFixed(2)}</TextWithColor>
-                                    </View>
+                                    <TouchableOpacity
+                                    key={index}
+                                    onPress={() => {items.splice(index, 1); setItems([...items])}}
+                                    >
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                                            <TextWithColor><TextWithColor color="rgba(199, 141, 33, 0.76)">x{item.quantity}</TextWithColor> {item.product}</TextWithColor>
+                                            <TextWithColor>${parseInt(item.quantity.toString()) * parseFloat(item.unitPrice.toString())}</TextWithColor>
+                                        </View>
+                                    </TouchableOpacity>
                                 )) 
                                 
                                 : 
@@ -192,7 +289,7 @@ export default function NewInvoice({ navigation }: INavGlobal) {
                             <View style={{ width: '100%', justifyContent: 'center', alignItems: 'flex-end', marginTop: 10 }}>
                                 <View style={{ justifyContent: 'space-between', width: '100%', flexDirection: 'row', alignItems: 'flex-end' }}>
                                     <TextWithColor color="rgba(36, 35, 35, 0.76)">Subtotal</TextWithColor>
-                                    <TextWithColor color="rgba(22, 22, 22, 0.83)" style={{ fontSize: 20, fontWeight: 'bold' }}>${items.map(item => item.subtotal).reduce((a, b) => a + b, 0).toFixed(2)}</TextWithColor>
+                                    <TextWithColor color="rgba(22, 22, 22, 0.83)" style={{ fontSize: 20, fontWeight: 'bold' }}>${subtotal}</TextWithColor>
                                 </View>
 
                                 <View style={{ justifyContent: 'space-between', width: '100%', flexDirection: 'row', alignItems: 'flex-end' }}>

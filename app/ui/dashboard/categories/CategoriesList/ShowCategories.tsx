@@ -1,9 +1,12 @@
 // components
-import { SafeAreaView, StyleSheet, Alert, Image, ActivityIndicator, View, FlatList } from "react-native";
+import { SafeAreaView, StyleSheet, Alert, Image, ActivityIndicator, View, FlatList, TouchableOpacity } from "react-native";
 import TextWithColor from "@/app/shared/components/TextWithColor";
 
 // hooks
 import { useEffect, useState } from "react";
+
+// interfaces
+import { CategoryType } from "@/app/shared/interfaces/ICategory";
 
 // Interfaces
 import { INavGlobal } from "@/app/shared/interfaces/INavGloba";
@@ -50,24 +53,31 @@ export default function ShowCategories({ navigation }: INavGlobal) {
         handleGetData()
     }, [])
 
-    const handleIcon = (icon: string): string => {
-        if (!icon) return '' 
+    useEffect(() => {
+        console.log(categories)
+    }, [])
 
-        const iconSelected = iconsWithIds.find(iconWithId => iconWithId.path === icon)
-        if (iconSelected) {
-            return iconSelected.path
-        }
+    const CardCategory = ({ item }: { item: CategoryType }) => {
+        return (
+            <TouchableOpacity onPress={() => {
+                navigation.navigate('ShowByCategory', { item: item })
+            }
+            }>
+                <View style={styleCardCategory.cardCategory}>
+                    <View style={styleCardCategory.cardCategoryContainer}>
+                        <Image style={{ width: 35, height: 35 }} source={{ uri: item.icon }}/>
+                        <TextWithColor color="rgb(223, 161, 74)">{item.name}</TextWithColor>
+                        <TextWithColor color="rgb(223, 161, 74)">{new Date(item.created_at).toISOString().split('T')[0]}</TextWithColor>
+                    </View>
 
-        return ''
+                    <View>
+                        <TextWithColor color="rgb(224, 167, 101)">{0 + 1}</TextWithColor>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
     }
 
-    useEffect(() => {
-        //wla
-        console.log(
-            handleIcon(iconsWithIds[2].path)
-        )
-    }, [])
- 
   return (
         <SafeAreaView style={styleShowCategories.mainInvoice}>
             <View style={styleShowCategories.decorationGradientLeft}></View>
@@ -79,10 +89,7 @@ export default function ShowCategories({ navigation }: INavGlobal) {
                 </View>
 
                 <FlatList data={categories} renderItem={({ item }) => 
-                    <View>
-                        <Image style={{ width: 50, height: 50 }} source={{ uri: handleIcon(item.icon) }}/>
-                        <TextWithColor>{item.name}</TextWithColor>
-                    </View>
+                    <CardCategory item={item} />
                 }/>
 
             </View>
@@ -111,7 +118,7 @@ const styleShowCategories = StyleSheet.create({
     right: 0,
     width: 200,
     height: 200,
-    backgroundColor: 'rgba(165, 141, 250, 0.72)',
+    backgroundColor: 'rgba(255, 188, 100, 0.72)',
     filter: 'blur(75px)',
     borderRadius: 100,
     transform: [{ translateX: -220 }, { translateY: -95 }, { rotate: '30deg' }],
@@ -142,3 +149,23 @@ const styleShowCategories = StyleSheet.create({
         borderRadius: 10
     }
 });
+
+const styleCardCategory = StyleSheet.create({
+    cardCategory: {
+        backgroundColor: 'rgb(252, 231, 193)',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        borderRadius: 10,
+        marginTop: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 10
+    },
+    cardCategoryContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 8
+    }
+})

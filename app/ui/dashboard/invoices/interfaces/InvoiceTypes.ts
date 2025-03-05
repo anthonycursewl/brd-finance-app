@@ -1,18 +1,19 @@
 export interface ItemInvoice {
-    name: string;
-    quantity: string | number;
-    amount: string | number;
-    subtotal: number;
+    id: string;
+    product: string;
+    quantity: number | string;
+    unitPrice: number | string;
 }
 
 export interface InvoiceData {
+    id: string;
     to: string;
     from: string;
-    category: string;
+    category_id: string;
     description: string;
     items: ItemInvoice[];
-    total: number;
-    created_at: string;
+    issuedAt: string;
+    is_paid: boolean
     tax: number;
     discount: number;
 }
@@ -23,9 +24,9 @@ export interface DiscountOrTax {
 }
 
 export interface IAddNewItem {
-    item: ItemInvoice
-    setItems: (items: ItemInvoice[]) => void
-    setItem: (item: ItemInvoice) => void
-    items: ItemInvoice[],
-    Alert: any
+    item: ItemInvoice;
+    setItems: (items: ItemInvoice[]) => void;
+    setItem: (item: ItemInvoice) => void;
+    items: ItemInvoice[];
+    Alert: any;
 }

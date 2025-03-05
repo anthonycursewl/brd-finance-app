@@ -24,7 +24,7 @@ export const useGlobalState = create<IGlobalState>((set) => ({
     setUser: (user: User) => set({ user }),
     IsAuthenticated: false,
     setIsAuthenticated: (isAuthenticated: boolean) => set({ IsAuthenticated: isAuthenticated }),
-    item: { name: '', quantity: '', amount: '', subtotal: 0 },
+    item: { product: '', quantity: '', unitPrice: '', id: '', invoiceId: '' },
     setItem: (item: ItemInvoice) => set({ item }),
     items: [],
     setItems: (items: ItemInvoice[]) => set({ items }),
