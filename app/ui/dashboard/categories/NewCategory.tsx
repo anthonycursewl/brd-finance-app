@@ -93,7 +93,7 @@ export default function NewCategory({ navigation }: INavGlobal) {
 
                 <View style={{ marginTop: 20, width: '100%', gap: 20 }}>
                     <View>
-                        <TextWithColor color="rgb(231, 173, 63)" style={{ fontSize: 20 }}>Creating a new category</TextWithColor>
+                        <TextWithColor color="rgb(56, 56, 56)" style={{ fontSize: 20 }}>Creating a new category</TextWithColor>
                         <TextWithColor color="rgba(99, 99, 99, 0.62)" style={{ fontSize: 12 }}>Details of the new category to store different invoices.</TextWithColor>
                     </View>
 
@@ -141,7 +141,7 @@ export default function NewCategory({ navigation }: INavGlobal) {
                         <View style={{ flexDirection: 'row', gap: 10 }}>
                             <TouchableOpacity style={styleNewCategory.buttonCreateInvoice}
                             onPress={() => {handleCreateNewCategory()}}>
-                                <TextWithColor>Create</TextWithColor>
+                                <TextWithColor color="rgba(238, 237, 237, 0.93)">Create</TextWithColor>
                             </TouchableOpacity>
 
                                 <TouchableOpacity style={styleNewCategory.buttonCancelInvoice} 
@@ -179,13 +179,13 @@ const styleNewCategory = StyleSheet.create({
     right: 0,
     width: 200,
     height: 200,
-    backgroundColor: 'rgba(255, 203, 106, 0.72)',
+    backgroundColor: 'rgba(102, 102, 102, 0.72)',
     filter: 'blur(75px)',
     borderRadius: 100,
     transform: [{ translateX: -220 }, { translateY: -95 }, { rotate: '30deg' }],
     },
     buttonAddItem: {
-        backgroundColor: 'rgb(255, 203, 106)',
+        backgroundColor: 'rgb(0, 0, 0)',
         width: 100,
         height: 40,
         justifyContent: 'center',
@@ -194,7 +194,7 @@ const styleNewCategory = StyleSheet.create({
         marginTop: 20
     },
     buttonCreateInvoice: {
-        backgroundColor: 'rgb(255, 203, 106)',
+        backgroundColor: 'rgb(56, 56, 56)',
         width: 150,
         height: 40,
         justifyContent: 'center',

@@ -123,7 +123,7 @@ export const CardInvoiceDetails = ({ inv, item, navigation }: CardInvoiceDetails
                   source={require("@/assets/images/icon_invoice_to.png")}
                 />
                 <TextWithColor
-                  color="rgb(214, 175, 124)"
+                  color="rgba(153, 126, 226, 0.7)"
                   style={{ fontSize: 13 }}
                 >
                   Invoice to
@@ -140,95 +140,6 @@ export const CardInvoiceDetails = ({ inv, item, navigation }: CardInvoiceDetails
           </View>
 
           <View style={styleInvoicesCategory.cardInvoiceBody}>
-            <View style={{ gap: 4 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 2,
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={require("@/assets/images/icon_status.png")}
-                />
-                <TextWithColor
-                  color="rgb(214, 175, 124)"
-                  style={{ fontSize: 12 }}
-                >
-                  Status
-                </TextWithColor>
-              </View>
-              <View
-                style={
-                  inv.is_paid
-                    ? styleInvoicesCategory.cardStatusPaid
-                    : styleInvoicesCategory.cardStatusUnpaid
-                }
-              >
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={inv.is_paid ? paidIcon : unpaidIcon}
-                />
-                <TextWithColor color="rgb(82, 82, 82)">
-                  {inv.is_paid ? "Paid" : "Unpaid"}
-                </TextWithColor>
-              </View>
-            </View>
-
-            <View style={{ gap: 2 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 2,
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={require("@/assets/images/icon_items.png")}
-                />
-                <TextWithColor
-                  color="rgb(214, 175, 124)"
-                  style={{ fontSize: 12 }}
-                >
-                  Items
-                </TextWithColor>
-              </View>
-              {inv.items.slice(0, 3).map((item, index) => (
-                <View
-                  key={index} style={{ gap: 3, flexDirection: "row",
-                    justifyContent: "space-between" }}>
-                  <View style={{ flexDirection: "row", gap: 3 }}>
-                    <TextWithColor color="rgb(214, 175, 124)"
-                      style={{ fontSize: 12 }}
-                    >
-                      x{item.quantity}
-                    </TextWithColor>
-                    <TextWithColor
-                      color="rgb(82, 82, 82)"
-                      style={{ fontSize: 14 }}
-                    >
-                      {item.product}
-                    </TextWithColor>
-                  </View>
-
-                  <TextWithColor
-                    color="rgb(158, 126, 68)"
-                    style={{ fontSize: 14 }}
-                  >
-                    ${item.unitPrice}
-                  </TextWithColor>
-                </View>
-              ))}
-              {inv.items.length > 3 && (
-                <TextWithColor color="rgb(82, 82, 82)" style={{ fontSize: 13 }}>
-                  +{inv.items.length - 3} more
-                </TextWithColor>
-              )}
-            </View>
 
             <View style={{ gap: 5 }}>
               <View
@@ -244,7 +155,7 @@ export const CardInvoiceDetails = ({ inv, item, navigation }: CardInvoiceDetails
                   source={require("@/assets/images/icon_description.png")}
                 />
                 <TextWithColor
-                  color="rgb(214, 175, 124)"
+                  color="rgba(153, 126, 226, 0.7)"
                   style={{ fontSize: 12 }}
                 >
                   Description
@@ -259,7 +170,7 @@ export const CardInvoiceDetails = ({ inv, item, navigation }: CardInvoiceDetails
                 <TouchableOpacity style={styleInvoicesCategory.buttonCreateInvoice}
                 onPress={() => navigation.navigation.navigate('InvoiceDetails', { invoice: inv })}
                 >
-                    <TextWithColor>View Invoice</TextWithColor>
+                    <TextWithColor color="rgba(238, 237, 237, 0.93)">View Invoice</TextWithColor>
                 </TouchableOpacity>
                 <TouchableOpacity style={styleInvoicesCategory.buttonCancelInvoice}>
                     <TextWithColor color="rgb(252, 244, 244)">Delete</TextWithColor>

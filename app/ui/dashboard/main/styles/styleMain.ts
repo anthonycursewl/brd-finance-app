@@ -74,7 +74,7 @@ export const styleMain = StyleSheet.create({
         right: 0,
         width: 200,
         height: 200,
-        backgroundColor: 'rgba(255, 203, 106, 0.72)',
+        backgroundColor: 'rgba(252, 251, 255, 0.72)',
         filter: 'blur(75px)',
         borderRadius: 100,
         transform: [{ translateX: 70 }, { translateY: -100 }, { rotate: '30deg' }],

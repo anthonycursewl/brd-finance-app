@@ -66,12 +66,12 @@ export default function ShowCategories({ navigation }: INavGlobal) {
                 <View style={styleCardCategory.cardCategory}>
                     <View style={styleCardCategory.cardCategoryContainer}>
                         <Image style={{ width: 35, height: 35 }} source={{ uri: item.icon }}/>
-                        <TextWithColor color="rgb(223, 161, 74)">{item.name}</TextWithColor>
-                        <TextWithColor color="rgb(223, 161, 74)">{new Date(item.created_at).toISOString().split('T')[0]}</TextWithColor>
+                        <TextWithColor color="'rgba(153, 126, 226, 0.7)'">{item.name}</TextWithColor>
+                        <TextWithColor color="rgba(61, 50, 90, 0.7)">{new Date(item.created_at).toISOString().split('T')[0]}</TextWithColor>
                     </View>
 
                     <View>
-                        <TextWithColor color="rgb(224, 167, 101)">{0 + 1}</TextWithColor>
+                        <TextWithColor color="rgba(163, 140, 228, 0.7)">{0 + 1}</TextWithColor>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -108,7 +108,7 @@ const styleShowCategories = StyleSheet.create({
     position: "relative",
   },
   mainInvoiceContainer: {
-    width: '85%',
+    width: '88%',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
@@ -118,7 +118,7 @@ const styleShowCategories = StyleSheet.create({
     right: 0,
     width: 200,
     height: 200,
-    backgroundColor: 'rgba(255, 188, 100, 0.72)',
+    backgroundColor: 'rgba(153, 126, 226, 0.7)',
     filter: 'blur(75px)',
     borderRadius: 100,
     transform: [{ translateX: -220 }, { translateY: -95 }, { rotate: '30deg' }],
@@ -152,7 +152,7 @@ const styleShowCategories = StyleSheet.create({
 
 const styleCardCategory = StyleSheet.create({
     cardCategory: {
-        backgroundColor: 'rgb(252, 231, 193)',
+        backgroundColor: 'rgba(219, 210, 245, 0.7)',
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center',

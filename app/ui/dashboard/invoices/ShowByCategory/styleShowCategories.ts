@@ -20,7 +20,7 @@ export const styleInvoicesCategory = StyleSheet.create({
         right: 0,
         width: 200,
         height: 200,
-        backgroundColor: 'rgba(255, 203, 106, 0.72)',
+        backgroundColor: 'rgba(153, 126, 226, 0.7)',
         filter: 'blur(75px)',
         borderRadius: 100,
         transform: [{ translateX: -220 }, { translateY: -95 }, { rotate: '30deg' }],
@@ -35,7 +35,7 @@ export const styleInvoicesCategory = StyleSheet.create({
         marginTop: 20
     },
     buttonCreateInvoice: {
-        backgroundColor: 'rgb(255, 203, 106)',
+        backgroundColor: 'rgb(56, 56, 56)',
         width: 150,
         height: 40,
         justifyContent: 'center',

@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Alert, StyleSheet, ScrollView, Image } from "react-native"
+import { SafeAreaView, View, Alert, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native"
 import TextWithColor from "@/app/shared/components/TextWithColor"
 
 import { useRoute } from "@react-navigation/native"
@@ -12,6 +12,8 @@ import { InvoiceData } from "../interfaces/InvoiceTypes"
 // Services
 import { get } from "@/app/shared/auth/services/useAuth"
 import { DiscountInfo } from "../ShowByCategory/ShowByCategory"
+import * as Clipboard from 'expo-clipboard';
+
 
 export default function InvoiceDetails() {
     const [invoiceData, setInvoiceData] = useState<InvoiceData>({ to: '', from: '', category_id: '', description: '', items: [], issuedAt: new Date().toISOString(), tax: 0, discount: 0, id: '', is_paid: false })
@@ -39,6 +41,13 @@ export default function InvoiceDetails() {
         return <TextWithColor style={{ fontWeight: 'bold', fontSize: 16 }}>$0.00</TextWithColor>
     }
 
+    const copyToClipboard = (text: string) => {
+        Clipboard.setStringAsync(text)
+        Alert.alert('BRD | Success', 'Copied to clipboard')
+    }
+
+    const linkToReadOnlyInvoice: string = `https://brdf.breadriuss.com/invoice/readonly?id=${invoice.id}&from=${invoice.users.email}&to=${invoice.to}`
+
   return (
     <ScrollView>
         <SafeAreaView style={styleDetailsInvoice.mainInvoice}>
@@ -46,7 +55,7 @@ export default function InvoiceDetails() {
 
             <View style={styleDetailsInvoice.mainInvoiceContainer}>
                 <View style={styleDetailsInvoice.invoiceHeader}>
-                    <TextWithColor color="rgb(39, 39, 39)" style={{ fontSize: 40, fontWeight: 'bold' }}>${total.toFixed(2)}</TextWithColor>
+                    <TextWithColor color="rgb(39, 39, 39)" style={{ fontSize: 45, fontWeight: 'bold' }}>${total.toFixed(2)}</TextWithColor>
 
                     <View style={styleDetailsInvoice.invoiceStatus}>
                         <View style={styleDetailsInvoice.invoiceStatusContainer}>
@@ -54,7 +63,7 @@ export default function InvoiceDetails() {
                             <TextWithColor color={invoice.is_paid ? 'rgb(38, 167, 70)' : 'rgb(228, 64, 64)'}>{invoice.is_paid ? 'PAID' : 'UNPAID'}</TextWithColor>
                         </View>
                         <View style={styleDetailsInvoice.invoiceStatusContainer}> 
-                            <TextWithColor color="rgb(224, 145, 26)" style={{ fontSize: 15 }}>#</TextWithColor>
+                            <TextWithColor color="rgb(167, 149, 233)" style={{ fontSize: 15 }}>#</TextWithColor>
                             <TextWithColor>{invoice.id}</TextWithColor>
                         </View>
                         <View style={styleDetailsInvoice.invoiceStatusContainer}>
@@ -75,20 +84,65 @@ export default function InvoiceDetails() {
                         </View>
                     </View>
 
-                    {
-                        invoice.items.map((item) => (
-                            <View key={item.id} style={{ width: '100%' }}> 
-                                <TextWithColor>{item.product}</TextWithColor>
-                            </View>
-                        ))
-                    }
+                    <View style={{ width: '100%', marginTop: 10, gap: 5, paddingTop: 10, paddingHorizontal: 5, borderTopColor: 'rgba(85, 85, 85, 0.35)', borderTopWidth: .5 }}>
+                        <TextWithColor color="rgb(167, 149, 233)" style={{ fontSize: 13 }}>To</TextWithColor>
+                        <TextWithColor>{invoice.to}</TextWithColor>
+                    </View>
 
+                    <View style={{ width: '100%', marginTop: 10, gap: 5, paddingTop: 10, paddingHorizontal: 5, paddingBottom: 5, borderTopColor: 'rgba(85, 85, 85, 0.35)', borderTopWidth: .5 }}>
+                        <TextWithColor color="rgb(167, 149, 233)" style={{ fontSize: 13 }}>Description</TextWithColor>
+                        <TextWithColor>{invoice.description}</TextWithColor>
+                    </View>
+
+                    <View style={{ width: '100%', marginTop: 10, gap: 5, paddingTop: 10, paddingHorizontal: 5, paddingBottom: 5, borderTopColor: 'rgba(85, 85, 85, 0.35)', borderTopWidth: .5 }}>
+                        <TextWithColor color="rgb(167, 149, 233)" style={{ fontSize: 13 }}>From</TextWithColor>
+                        <TextWithColor>{invoice.users.name}</TextWithColor>
+                        <TouchableOpacity style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}
+                        onPress={() => copyToClipboard(invoice.users.email)}
+                        >
+                            <TextWithColor style={{ color: 'rgb(167, 149, 233)', textDecorationLine: 'underline' }}>{invoice.users.email}</TextWithColor>
+                            <Image source={require('@/assets/images/icon_copy_email.png')} style={{ width: 20, height: 20 }}/>
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView horizontal style={{ width: '100%', marginTop: 10, paddingTop: 10, paddingHorizontal: 5, paddingBottom: 5, borderTopColor: 'rgba(85, 85, 85, 0.35)', borderTopWidth: .5 }}>
+                        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                            <TouchableOpacity style={styleDetailsInvoice.invoiceShare}
+                            onPress={() => 
+                                copyToClipboard(linkToReadOnlyInvoice)
+                            }
+                            >
+                                <Image source={require('@/assets/images/icon_share_invoice.png')} style={{ width: 12, height: 12 }}/>
+                                <TextWithColor>Share Invoice</TextWithColor>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styleDetailsInvoice.invoiceShare}
+                            onPress={() => copyToClipboard(invoice.id ? invoice.id : '')}>
+                                <TextWithColor>#</TextWithColor>
+                                <TextWithColor>Copy ID</TextWithColor>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+
+                    <View style={{ width: '100%', marginTop: 10, flexDirection: 'row', gap: 5, justifyContent: 'flex-start', alignItems: 'center' }}>
+                        <Image source={require('@/assets/images/icon_items.png')} style={styleDetailsInvoice.invoiceStatusIcon} />
+                        <TextWithColor color="rgb(37, 37, 37)" style={{ fontSize: 14 }}>{invoice.items.length} | Items</TextWithColor>
+                    </View>
+
+                    <View style={{ width: '100%', padding: 10, borderColor: 'rgb(85, 85, 85)', borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, marginTop: 10 }}> 
+                    {
+                        invoice.items.map((item, index) => (
+                            <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                                <TextWithColor key={index}><TextWithColor color="rgba(121, 107, 170, 0.78)">x{item.quantity} </TextWithColor> 
+                                {item.product}</TextWithColor>
+                                <TextWithColor>${parseFloat(item.unitPrice.toString()).toFixed(2)}</TextWithColor>
+                            </View>
+                            ))
+                        }
+                    </View>
 
                 </View>
                 
             </View>
-
-
 
         </SafeAreaView>
     </ScrollView>
@@ -116,7 +170,7 @@ const styleDetailsInvoice = StyleSheet.create({
     right: 0,
     width: 200,
     height: 200,
-    backgroundColor: 'rgba(255, 203, 106, 0.72)',
+    backgroundColor: 'rgba(153, 126, 226, 0.7)',
     filter: 'blur(75px)',
     borderRadius: 100,
     transform: [{ translateX: -220 }, { translateY: -95 }, { rotate: '30deg' }],
@@ -151,7 +205,6 @@ const styleDetailsInvoice = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
-        gap: 10
     },
     invoiceId: {
         backgroundColor: 'rgb(233, 232, 232)',
@@ -192,6 +245,17 @@ const styleDetailsInvoice = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center', 
         backgroundColor: 'rgb(241, 241, 241)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 10
+    },
+    invoiceShare: {
+        flexDirection: 'row',
+        gap: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        backgroundColor: 'rgb(228, 225, 225)',
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 10

@@ -114,7 +114,7 @@ export default function ShowByCategory({ navigation }: INavGlobal) {
               style={{ width: 30, height: 30 }}
             />
             <TextWithColor
-              color="rgb(223, 161, 74)"
+              color="rgba(153, 126, 226, 0.7)"
               style={{ fontSize: 18, fontWeight: "bold" }}
             >
               {item.name}
